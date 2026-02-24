@@ -10,7 +10,7 @@ to setup
   
   create-turtles round((world-width * world-height) * densidad)[
     ;elige un color de forma aleatoria
-    set color one-of [ yellow red ]
+    set color item (random grupos) [ yellow red blue grey magenta white ]
     set size 0.75
     ;mueve a patches vacios
     move-to one-of patches with [ not any? turtles-here ]
@@ -57,8 +57,8 @@ to-report soy_feliz?
 end]]></code>
   <widgets>
     <view x="368" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-16" height="434" showTickCounter="true" patchSize="13.0" fontSize="10" wrappingAllowedY="true" width="434" tickCounterLabel="ticks" maxPycor="16" updateMode="1" maxPxcor="16" minPxcor="-16"></view>
-    <slider x="55" step="0.01" y="220" max="1" width="250" display="densidad" height="50" min="0" direction="Horizontal" default="0.22" variable="densidad"></slider>
-    <slider x="55" step="1" y="300" max="100" width="250" display="preferencia" height="50" min="0" direction="Horizontal" default="64.0" variable="preferencia" units="%"></slider>
+    <slider x="55" step="0.01" y="220" max="1" width="250" display="densidad" height="50" min="0" direction="Horizontal" default="0.53" variable="densidad"></slider>
+    <slider x="55" step="1" y="300" max="100" width="250" display="preferencia" height="50" min="0" direction="Horizontal" default="55.0" variable="preferencia" units="%"></slider>
     <plot x="840" autoPlotX="true" yMax="10.0" autoPlotY="true" yAxis="agentes felices" y="95" xMin="0.0" height="305" legend="false" xMax="10.0" yMin="0.0" xAxis="tiempo" display="felices" width="390" sizeVersion="0">
       <setup></setup>
       <update></update>
@@ -70,6 +70,7 @@ end]]></code>
     <button x="125" y="155" height="40" disableUntilTicks="false" forever="true" kind="Observer" width="55">go</button>
     <button x="140" y="90" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="55">setup
 </button>
+    <slider x="50" step="1" y="370" max="4" width="250" display="grupos" height="50" min="1" direction="Horizontal" default="3.0" variable="grupos"></slider>
   </widgets>
   <info>## WHAT IS IT?
 

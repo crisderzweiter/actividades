@@ -12,7 +12,7 @@ to setup
   clear-all
 
   ask patches [ set pcolor green ]
-  create-ovejas 20 [
+  create-ovejas num_ovejas [
     set shape "sheep"
     setxy random-xcor random-ycor
     set color white  
@@ -20,11 +20,12 @@ to setup
     ;darle energía entre 0 y 20
     set energia random 20
   ]
-  create-lobos 20 [
+  create-lobos num_lobos [
     set shape "wolf"
     setxy random-xcor random-ycor
     set color grey  
     set size 2
+    set energia random 20
   ]
   ;reinicia el relojito
   reset-ticks
@@ -36,11 +37,18 @@ to go
     moverse
     morirse
     comer
+    reproducirse
   ]
 
   ask lobos [
     moverse
     morirse
+    comer_ovejas
+    reproducirse
+  ]
+
+  ask patches [
+    regenerarse
   ]
 
   ;avanza el reloj
@@ -70,12 +78,58 @@ to comer
     set energia energia + 3
     
   ]
-end]]></code>
+end
+
+to comer_ovejas
+  if any? ovejas-here [
+    ask one-of ovejas-here [die]
+    set energia energia + 10
+  ]
+  
+end
+
+to reproducirse
+  if energia > 20 [
+    set energia energia / 2
+    hatch 1
+  ]
+end
+
+to regenerarse
+  ;checar color y el random es así para algo entre 1 y 0. luego checamos si hay vecinos verdes
+  if pcolor = brown and random-float 1 <= tasa_regeneracion and any? neighbors with [pcolor = green][
+    set pcolor green
+  ]
+end
+  ]]></code>
   <widgets>
     <view x="368" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-16" height="434" showTickCounter="true" patchSize="13.0" fontSize="10" wrappingAllowedY="true" width="434" tickCounterLabel="ticks" maxPycor="16" updateMode="1" maxPxcor="16" minPxcor="-16"></view>
+    <plot x="875" autoPlotX="true" yMax="10.0" autoPlotY="true" yAxis="tamaño" y="60" xMin="0.0" height="235" legend="true" xMax="10.0" yMin="0.0" width="320" xAxis="tiempo" display="Poblaciones">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="ovejas" color="-16777216" legend="true">
+        <setup></setup>
+        <update>plot count ovejas</update>
+      </pen>
+      <pen interval="1.0" mode="0" display="lobos" color="-2674135" legend="true">
+        <setup></setup>
+        <update>plot count lobos</update>
+      </pen>
+    </plot>
     <button x="130" y="145" height="40" disableUntilTicks="false" forever="true" kind="Observer" width="55">go</button>
     <button x="130" y="90" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="55">setup
 </button>
+    <slider x="50" step="0.01" y="230" max="1" width="250" display="tasa_regeneracion" height="50" min="0" direction="Horizontal" default="1.0" variable="tasa_regeneracion"></slider>
+    <slider x="45" step="1" y="295" max="100" width="250" display="num_ovejas" height="50" min="0" direction="Horizontal" default="52.0" variable="num_ovejas"></slider>
+    <slider x="40" step="1" y="360" max="100" width="250" display="num_lobos" height="50" min="0" direction="Horizontal" default="50.0" variable="num_lobos"></slider>
+    <plot x="870" autoPlotX="true" yMax="10.0" autoPlotY="true" yAxis="lobos" y="315" xMin="0.0" height="175" legend="false" xMax="10.0" yMin="0.0" width="230" xAxis="ovejas" display="Espacio fase">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="default" color="-16777216" legend="true">
+        <setup></setup>
+        <update>plotxy (count ovejas) (count lobos) ;no son necesarios los parentesis</update>
+      </pen>
+    </plot>
   </widgets>
   <info>## WHAT IS IT?
 

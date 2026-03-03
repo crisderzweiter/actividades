@@ -64,20 +64,36 @@ to revisar_vecinos
     ; le resta .5 hasta 2.5 a amarillo para simular apagado
     set color yellow - (0.5 * reloj)
   ]
+end
 
-    
+to-report entropia_shannon
+  let shannon 0
+  let suma1 0
+  let suma2 0
   
+  let prendidas count turtles with [color = yellow] 
+  let apagadas (num_luciernagas - prendidas)
+  ;probabilidades
+  let p1 (prendidas / num_luciernagas)
+  let p2 (apagadas / num_luciernagas)
+  
+  ;para evitar log 0 
+  if p1 > 0 and p2 > 0 [
+    set suma1 (p1 * (log p1 2))
+    set suma2 (p2 * (log p2 2))
+    set shannon (- (suma1 + suma2) )
+  ]
+  
+  report shannon
 end]]></code>
   <widgets>
     <view x="368" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="-16" height="434" showTickCounter="true" patchSize="13.0" fontSize="10" wrappingAllowedY="true" width="434" tickCounterLabel="ticks" maxPycor="16" updateMode="1" maxPxcor="16" minPxcor="-16"></view>
-    <button x="110" y="105" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="55">setup</button>
-    <button x="100" y="160" height="40" disableUntilTicks="false" forever="true" kind="Observer" width="55">go</button>
-    <slider x="65" step="10" y="220" max="1000" width="250" display="num_luciernagas" height="50" min="0" direction="Horizontal" default="270.0" variable="num_luciernagas"></slider>
+    <slider x="65" step="10" y="220" max="1000" width="250" display="num_luciernagas" height="50" min="0" direction="Horizontal" default="300.0" variable="num_luciernagas"></slider>
     <slider x="60" step="1" y="280" max="40" width="250" display="umbral" height="50" min="10" direction="Horizontal" default="20.0" variable="umbral"></slider>
-    <slider x="60" step="1" y="345" max="5" width="250" display="min_luces_resetear" height="50" min="1" direction="Horizontal" default="1.0" variable="min_luces_resetear"></slider>
-    <slider x="55" step="1" y="410" max="5" width="250" display="radio_vision" height="50" min="1" direction="Horizontal" default="1.0" variable="radio_vision"></slider>
-    <slider x="50" step="1" y="470" max="10" width="250" display="ventana" height="50" min="0" direction="Horizontal" default="5.0" variable="ventana"></slider>
-    <plot x="945" autoPlotX="true" yMax="10.0" autoPlotY="true" yAxis="reloj" y="115" xMin="0.0" height="175" legend="false" xMax="10.0" yMin="0.0" width="230" xAxis="tiempo" display="reloj de luciernaga muestra">
+    <slider x="60" step="1" y="345" max="5" width="250" display="min_luces_resetear" height="50" min="1" direction="Horizontal" default="2.0" variable="min_luces_resetear"></slider>
+    <slider x="55" step="1" y="410" max="5" width="250" display="radio_vision" height="50" min="1" direction="Horizontal" default="3.0" variable="radio_vision"></slider>
+    <slider x="50" step="1" y="470" max="10" width="250" display="ventana" height="50" min="0" direction="Horizontal" default="8.0" variable="ventana"></slider>
+    <plot x="910" autoPlotX="true" yMax="10.0" autoPlotY="true" yAxis="reloj" y="45" xMin="0.0" height="190" legend="false" xMax="10.0" yMin="0.0" width="255" xAxis="tiempo" display="reloj de luciernaga muestra">
       <setup></setup>
       <update></update>
       <pen interval="1.0" mode="0" display="default" color="-16777216" legend="true">
@@ -85,6 +101,24 @@ end]]></code>
         <update>plot [reloj] of luciernaga_muestra</update>
       </pen>
     </plot>
+    <plot x="910" autoPlotX="true" yMax="10.0" autoPlotY="true" yAxis="num luciernagas prendidas" y="250" xMin="0.0" height="185" legend="false" xMax="10.0" yMin="0.0" width="255" xAxis="tiempo" display="luciernagas prendidas">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="default" color="-16777216" legend="true">
+        <setup></setup>
+        <update>plot count turtles with [color = yellow]</update>
+      </pen>
+    </plot>
+    <plot x="1180" autoPlotX="true" yMax="2.0" autoPlotY="true" yAxis="Entropia" y="170" xMin="0.0" height="230" legend="false" xMax="10.0" yMin="0.0" width="300" xAxis="tiempo" display="Entropia Shannon">
+      <setup></setup>
+      <update></update>
+      <pen interval="1.0" mode="0" display="default" color="-16777216" legend="true">
+        <setup></setup>
+        <update>plot entropia_shannon</update>
+      </pen>
+    </plot>
+    <button x="110" y="105" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="55">setup</button>
+    <button x="100" y="160" height="40" disableUntilTicks="false" forever="true" kind="Observer" width="55">go</button>
   </widgets>
   <info>## WHAT IS IT?
 

@@ -1,103 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <model version="NetLogo 7.0.3" snapToGrid="true">
-  <code><![CDATA[to setup
+  <code><![CDATA[patches-own [
+  siguiente-color
+]
+
+to setup
   clear-all
-  
-  ask patches[
-    set pcolor one-of [red yellow blue black]
+
+  ask patches [
+    set pcolor one-of [red yellow blue ]
+    set siguiente-color pcolor
   ]
-  
+
   reset-ticks
 end
 
 to go
-
-
-  let evento_seleccion 0
-  let evento_reproduccion 1
-  let evento_intercambio 2
-  
-  let eventos shuffle (sentence
-    n-values (random-poisson tasa_seleccion) [evento_seleccion]
-    n-values (random-poisson tasa_reproduccion) [evento_reproduccion]
-    n-values (random-poisson tasa_intercambio) [evento_intercambio]
-  )
-  
-  foreach eventos [
-    evento -> ask one-of patches [
-      let otra_celda one-of neighbors
-      if evento = evento_seleccion [ seleccion otra_celda]
-      if evento = evento_reproduccion [ reproduccion otra_celda]
-      if evento = evento_intercambio [ intercambiar otra_celda]
-    ]
-  ]
-  
-;elegir celda al azar
-  ;ask one-of patches[
-    ;;elegir a la otra celd
-   ; let otra_celda one-of neighbors  
-
-    ;calcular probabilidades de que ocurra cada evento
-    ;let prob_reproduccion tasa_reproduccion / (tasa_reproduccion + tasa_seleccion + tasa_intercambio)
-   ; let prob_seleccion tasa_seleccion / (tasa_reproduccion + tasa_seleccion + tasa_intercambio)
-    ;let prob_intercambio tasa_intercambio / (tasa_reproduccion + tasa_seleccion + tasa_intercambio)
-
-    ;let p random-float 1.0
-    ;(ifelse
-     ; 0 <= p and p < prob_reproduccion [ reproduccion otra_celda ]
-      ;prob_reproduccion <= p and p < prob_reproduccion + prob_seleccion [ seleccion otra_celda ]
-     ; prob_reproduccion + prob_seleccion <= p and p < 1 [intercambiar otra_celda]
-    ;)
-   
- ; ]
-  
+  calcular-siguiente-estado
+  actualizar-estado
   tick
 end
 
-to-report le_gano? [el_otro]
-  (ifelse
-    pcolor = red and [pcolor] of el_otro = blue[report true]
-    pcolor = blue and [pcolor] of el_otro = yellow [report true]
-    pcolor = yellow and [pcolor] of el_otro = red [report true]
-    [report false]
-  )
-end
+to calcular-siguiente-estado
+  ask patches [
+    set siguiente-color pcolor
 
-to seleccion [otra_celda]
-  ;;revisar sile gano a mi competidor
-    ifelse le_gano? otra_celda[
-      ;;si sí le gano, lo elimino
-      ask otra_celda [set pcolor black]
-    ][
-      ;;revisar si el otro me gana
-      if [le_gano? myself] of otra_celda[
-      ;;si me gana me elimina
-      set pcolor black
+    if pcolor = blue [
+      if count neighbors with [pcolor = red] >= criterio-vecinos [
+        set siguiente-color red
       ]
     ]
-  
-end
 
-to reproduccion [otra_celda]
-  if[pcolor] of otra_celda = black [
-    ask otra_celda[ 
-      set pcolor [pcolor] of myself
+    if pcolor = yellow [
+      if count neighbors with [pcolor = blue] >= criterio-vecinos [
+        set siguiente-color blue
+      ]
+    ]
+
+    if pcolor = red [
+      if count neighbors with [pcolor = yellow] >= criterio-vecinos [
+        set siguiente-color yellow
+      ]
     ]
   ]
 end
 
-to intercambiar [ otra_celda]
-  let mi_color_viejo pcolor
-  set pcolor [pcolor] of otra_celda
-  ask otra_celda [set pcolor mi_color_viejo]
+to actualizar-estado
+  ask patches [
+    set pcolor siguiente-color
+  ]
 end]]></code>
   <widgets>
     <view x="368" wrappingAllowedX="true" y="10" frameRate="30.0" minPycor="0" height="445" showTickCounter="true" patchSize="4.37" fontSize="10" wrappingAllowedY="true" width="445" tickCounterLabel="ticks" maxPycor="100" updateMode="0" maxPxcor="100" minPxcor="0"></view>
     <button x="145" y="30" height="40" disableUntilTicks="false" forever="true" kind="Observer" width="55">go</button>
-    <slider x="35" step="1" y="95" max="500" width="250" display="tasa_seleccion" height="50" min="0" direction="Horizontal" default="60.0" variable="tasa_seleccion"></slider>
-    <slider x="45" step="1" y="165" max="500" width="250" display="tasa_reproduccion" height="50" min="0" direction="Horizontal" default="54.0" variable="tasa_reproduccion"></slider>
-    <slider x="30" step="1" y="230" max="1000" width="250" display="tasa_intercambio" height="50" min="0" direction="Horizontal" default="1000.0" variable="tasa_intercambio"></slider>
     <button x="70" y="35" height="40" disableUntilTicks="false" forever="false" kind="Observer" width="55">setup</button>
+    <slider x="50" step="1" y="130" max="8" width="250" display="criterio-vecinos" height="50" min="1" direction="Horizontal" default="4.0" variable="criterio-vecinos"></slider>
   </widgets>
   <info>## WHAT IS IT?
 
